@@ -61,12 +61,14 @@ def visualize_patches(patches):
     plt.axis("off")
 
 
-def visualize_grid_and_patches(grid, labels, patches):
+def visualize(grid, labels, patches, flat_patches):
     plt.figure()
-    plt.subplot(1, 2, 1)
+    plt.subplot(3, 1, 1)
     visualize_grid(grid, labels)
-    plt.subplot(1, 2, 2)
+    plt.subplot(3, 1, 2)
     visualize_patches(patches)
+    plt.subplot(3, 1, 3)
+    visualize_flat_patches(flat_patches)
     plt.show()
 
 
@@ -82,7 +84,18 @@ def create_patches(grid):
     return patches
 
 
+def visualize_flat_patches(flat_patches):
+    plt.imshow(flat_patches, cmap="gray")
+    plt.axis("off")
+
+
+def flatten_patches(patches):
+    flat_patches = patches.reshape(16, -1)
+    return flat_patches
+
+
 if __name__ == "__main__":
     for grid, labels in generate_grids(train_data):
         patches = create_patches(grid)
-        visualize_grid_and_patches(grid, labels, patches)
+        flat_patches = flatten_patches(patches)
+        visualize(grid, labels, patches, flat_patches)
