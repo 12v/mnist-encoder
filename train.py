@@ -13,7 +13,7 @@ def train():
 
     torch.manual_seed(7)
 
-    batch_size = 50
+    batch_size = 500
 
     train_dataloader = DataLoader(
         Dataset(train_data),
