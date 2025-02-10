@@ -80,8 +80,5 @@ class Decoder(nn.Module):
 
         x = self.output_layer(label_embeddings)
         x = self.softmax(x)
-        # print(x.shape)
-        # print(x)
-        # exit()
 
         return x
