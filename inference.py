@@ -19,7 +19,7 @@ model = Decoder(
     decoder_length=5,
 )
 
-model.load_state_dict(torch.load("model-tblr.pth"))
+model.load_state_dict(torch.load("model.pth"))
 
 model.eval()
 with torch.no_grad():
