@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from data.dataset import Dataset
-from data.mnist import train_data
+from data.mnist import test_data, train_data
 from data.tokenizer import vocab
 from model.decoder import Decoder
 from model.utils import device
@@ -18,6 +18,13 @@ def train():
 
     train_dataloader = DataLoader(
         Dataset(train_data),
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=True,
+    )
+
+    val_dataloader = DataLoader(
+        Dataset(test_data),
         batch_size=batch_size,
         shuffle=False,
         drop_last=True,
@@ -70,6 +77,19 @@ def train():
 
             batch_losses.append(loss.item())
             train_loop.set_postfix(loss=f"{sum(batch_losses) / len(batch_losses):.4f}")
+
+        val_losses = []
+        for image_batch, input_label_batch, output_label_batch in val_dataloader:
+            model.eval()
+            with torch.no_grad():
+                loss = model.compute_loss(
+                    image_batch.to(device),
+                    input_label_batch.to(device),
+                    output_label_batch.to(device),
+                )
+                val_losses.append(loss.item())
+
+        print(f"Validation loss: {sum(val_losses) / len(val_losses):.4f}")
 
     # save the model weights
     torch.save(model.state_dict(), "weights/model.pth")

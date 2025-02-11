@@ -1,7 +1,7 @@
 import torch
 
 from data.images import create_patches, flatten_patches
-from data.mnist import get_images_and_labels, train_data
+from data.mnist import get_images_and_labels, test_data
 from data.tokenizer import tokenize, vocab
 from data.visualization import visualize_image
 from model.decoder import Decoder
@@ -26,7 +26,7 @@ model.load_state_dict(torch.load("weights/model.pth"))
 
 model.eval()
 with torch.no_grad():
-    images, _ = get_images_and_labels(train_data)
+    images, _ = get_images_and_labels(test_data)
     for image in images:
         patches = create_patches(image)
         patches = flatten_patches(patches)
