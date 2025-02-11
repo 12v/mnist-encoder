@@ -1,7 +1,6 @@
 import torch
 from torchvision import datasets, transforms
 
-from tokenizer import tokenize_input_labels, tokenize_output_labels
 from visualization import visualize
 
 train_data = datasets.MNIST(
@@ -17,8 +16,10 @@ test_data = datasets.MNIST(
 test_data.data = test_data.data / 255
 
 
-def generate_grids(data):
+def get_grids(data):
     outer_random_indices = torch.randperm(data.data.shape[0])
+    grids = []
+    labels = []
 
     for i in range(0, data.data.shape[0], 4):
         if i + 4 > data.data.shape[0]:
@@ -28,12 +29,15 @@ def generate_grids(data):
         random_images = data.data[random_indices]
         random_labels = data.targets[random_indices]
 
-        top_row = torch.cat((random_images[0], random_images[1]), dim=0)
-        bottom_row = torch.cat((random_images[2], random_images[3]), dim=0)
+        left_column = torch.cat((random_images[0], random_images[2]), dim=0)
+        right_column = torch.cat((random_images[1], random_images[3]), dim=0)
 
-        img_grid = torch.cat((top_row, bottom_row), dim=1)
+        img_grid = torch.cat((left_column, right_column), dim=1)
 
-        yield img_grid, random_labels
+        grids.append(img_grid)
+        labels.append(random_labels)
+
+    return grids, labels
 
 
 def create_patches(grid):
@@ -45,31 +49,7 @@ def create_patches(grid):
 
     patches = grid.reshape(-1, patch_size, patch_size)
 
-    flat_patches = patches.reshape(16, -1)
-
-    return flat_patches
-
-
-def generate_patches(data):
-    outer_random_indices = torch.randperm(data.data.shape[0])
-
-    for i in range(0, data.data.shape[0], 4):
-        if i + 4 > data.data.shape[0]:
-            break
-
-        random_indices = outer_random_indices[i : i + 4]
-        random_images = data.data[random_indices]
-        random_labels = data.targets[random_indices]
-
-        top_row = torch.cat((random_images[0], random_images[1]), dim=0)
-        bottom_row = torch.cat((random_images[2], random_images[3]), dim=0)
-
-        img_grid = torch.cat((top_row, bottom_row), dim=1)
-
-        patches = create_patches(img_grid)
-        input_labels = tokenize_input_labels(random_labels)
-        output_labels = tokenize_output_labels(random_labels)
-        yield patches, input_labels, output_labels
+    return patches
 
 
 def flatten_patches(patches):
@@ -78,7 +58,8 @@ def flatten_patches(patches):
 
 
 if __name__ == "__main__":
-    for grid, labels in generate_grids(train_data):
+    grids, labels = get_grids(train_data)
+    for grid, label in zip(grids, labels):
         patches = create_patches(grid)
         flat_patches = flatten_patches(patches)
-        visualize(grid, labels, patches, flat_patches)
+        visualize(grid, label, patches, flat_patches)

@@ -2,7 +2,8 @@ import torch
 
 from data import (
     create_patches,
-    generate_grids,
+    flatten_patches,
+    get_grids,
     train_data,
 )
 from decoder import Decoder
@@ -22,12 +23,14 @@ model = Decoder(
     decoder_length=5,
 )
 
-model.load_state_dict(torch.load("model.pth"))
+model.load_state_dict(torch.load("model-tblr.pth"))
 
 model.eval()
 with torch.no_grad():
-    for grid, _ in generate_grids(train_data):
+    grids, _ = get_grids(train_data)
+    for grid in grids:
         patches = create_patches(grid)
+        patches = flatten_patches(patches)
 
         sequence = ["<start>"]
 

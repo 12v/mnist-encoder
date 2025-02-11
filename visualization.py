@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 
 def visualize(grid, labels, patches, flat_patches):
     def visualize_grid(grid, labels):
-        plt.imshow(grid, cmap="gray")
+        plt.imshow(grid, cmap="gray", vmin=0, vmax=1)
 
         i = 0
         grid_size = grid.shape[0]
-        for c in [0, 1]:
-            for r in [0, 1]:
+        print(labels)
+        for r in [0, 1]:
+            for c in [0, 1]:
                 x_coord = c * grid_size / 2
                 y_coord = r * grid_size / 2
                 plt.text(
@@ -24,14 +25,19 @@ def visualize(grid, labels, patches, flat_patches):
         plt.axis("off")
 
     def visualize_patches(patches):
-        patches = patches.permute(1, 0, 2)
-        patches = patches.reshape(14, 224)
-        plt.imshow(patches, cmap="gray")
         plt.axis("off")
+        for i in range(16):
+            plt.subplot(1, 16, i + 1)
+            patch = patches[i]
+            plt.imshow(patch, cmap="gray", vmin=0, vmax=1)
+            plt.axis("off")
 
     def visualize_flat_patches(flat_patches):
-        plt.imshow(flat_patches, cmap="gray")
         plt.axis("off")
+        for i in range(16):
+            plt.subplot(16, 1, i + 1)
+            plt.imshow(flat_patches[i].unsqueeze(0), cmap="gray", vmin=0, vmax=1)
+            plt.axis("off")
 
     plt.figure()
     plt.subplot(3, 1, 1)
