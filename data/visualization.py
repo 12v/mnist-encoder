@@ -56,24 +56,27 @@ def visualize_image(image):
 
 
 def visualize_attention(image, encoder_self_attention, self_attention, cross_attention):
-    plt.subplot(2, 2, 1)
-    plt.title("Input image")
-    plt.imshow(image, cmap="gray")
-    plt.axis("off")
+    fig, axes = plt.subplots(2, 2, figsize=(8, 8))
 
-    plt.subplot(2, 2, 2)
-    plt.title("Decoder self-attention")
-    plt.imshow(self_attention.squeeze(0), cmap="gray")
-    plt.axis("off")
+    im = axes[0, 0].imshow(image)
+    axes[0, 0].set_title("Input image", fontsize=12)
+    axes[0, 0].axis("off")
+    fig.colorbar(im, ax=axes[0, 0], fraction=0.046, pad=0.04)
 
-    plt.subplot(2, 2, 3)
-    plt.title("Encoder self-attention")
-    plt.imshow(encoder_self_attention.squeeze(0), cmap="gray")
-    plt.axis("off")
+    im = axes[1, 0].imshow(self_attention.squeeze(0))
+    axes[1, 0].set_title("Decoder self-attention", fontsize=12)
+    axes[1, 0].axis("off")
+    fig.colorbar(im, ax=axes[1, 0], fraction=0.046, pad=0.04)
 
-    plt.subplot(2, 2, 4)
-    plt.title("Decoder cross-attention")
-    plt.imshow(cross_attention.squeeze(0), cmap="gray")
-    plt.axis("off")
+    im = axes[0, 1].imshow(encoder_self_attention.squeeze(0))
+    axes[0, 1].set_title("Encoder self-attention", fontsize=12)
+    axes[0, 1].axis("off")
+    fig.colorbar(im, ax=axes[0, 1], fraction=0.046, pad=0.04)
 
+    im = axes[1, 1].imshow(cross_attention.squeeze(0))
+    axes[1, 1].set_title("Decoder cross-attention", fontsize=12)
+    axes[1, 1].axis("off")
+    fig.colorbar(im, ax=axes[1, 1], fraction=0.046, pad=0.04)
+
+    plt.tight_layout()
     plt.show()

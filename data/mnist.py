@@ -3,8 +3,9 @@ from torchvision import datasets, transforms
 
 
 def normalize_and_standardize(data):
-    data = (data - 127.5) / 127.5
-    data = (data - data.mean()) / data.std()
+    data = data.float()
+    data = data - data.mean() / data.std()
+    data = 2 * (data - data.min()) / (data.max() - data.min()) - 1
     return data
 
 
