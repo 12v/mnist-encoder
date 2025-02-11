@@ -25,12 +25,12 @@ class EncoderLayer(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, attention_depth, d_model, embedding_dim, length):
+    def __init__(self, attention_depth, d_model, embedding_dim, length, num_layers):
         super().__init__()
         self.embedder = nn.Linear(embedding_dim, d_model)
         self.positional_encoder = PositionalEncoder(d_model, length)
         self.encoder_layers = nn.ModuleList(
-            [EncoderLayer(attention_depth, d_model) for _ in range(6)]
+            [EncoderLayer(attention_depth, d_model) for _ in range(num_layers)]
         )
 
     def forward(self, x):

@@ -18,6 +18,8 @@ model = Decoder(
     encoder_length=16,
     decoder_length=5,
     vocab_size=len(vocab),
+    num_encoder_layers=6,
+    num_decoder_layers=6,
 )
 
 model.load_state_dict(torch.load("weights/model.pth"))

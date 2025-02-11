@@ -46,18 +46,24 @@ class Decoder(nn.Module):
         decoder_embedding_dim,
         encoder_length,
         decoder_length,
+        num_encoder_layers,
+        num_decoder_layers,
         vocab_size,
     ):
         super().__init__()
         self.embedder = nn.Embedding(decoder_embedding_dim, d_model_decoder)
         self.positional_encoder = PositionalEncoder(d_model_decoder, decoder_length)
         self.encoder = Encoder(
-            attention_depth, d_model_encoder, encoder_embedding_dim, encoder_length
+            attention_depth,
+            d_model_encoder,
+            encoder_embedding_dim,
+            encoder_length,
+            num_encoder_layers,
         )
         self.decoder_layers = nn.ModuleList(
             [
                 DecoderLayer(attention_depth, d_model_decoder, d_model_encoder)
-                for _ in range(6)
+                for _ in range(num_decoder_layers)
             ]
         )
         self.output_layer = nn.Linear(d_model_decoder, vocab_size)
