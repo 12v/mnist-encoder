@@ -25,7 +25,7 @@ num_decoder_layers = 6
 
 
 def train():
-    num_epochs = 20
+    num_epochs = 40
 
     torch.manual_seed(7)
 
@@ -104,10 +104,8 @@ def train():
                 )
                 val_losses.append(loss.item())
 
+        torch.save(model.state_dict(), f"weights/model_{epoch}.pth")
         print(f"Validation loss: {sum(val_losses) / len(val_losses):.4f}")
-
-    # save the model weights
-    torch.save(model.state_dict(), "weights/model.pth")
 
 
 if __name__ == "__main__":

@@ -53,3 +53,27 @@ def visualize_image(image):
     plt.imshow(image, cmap="gray")
     plt.axis("off")
     plt.show()
+
+
+def visualize_attention(image, encoder_self_attention, self_attention, cross_attention):
+    plt.subplot(2, 2, 1)
+    plt.title("Input image")
+    plt.imshow(image, cmap="gray")
+    plt.axis("off")
+
+    plt.subplot(2, 2, 2)
+    plt.title("Decoder self-attention")
+    plt.imshow(self_attention.squeeze(0), cmap="gray")
+    plt.axis("off")
+
+    plt.subplot(2, 2, 3)
+    plt.title("Encoder self-attention")
+    plt.imshow(encoder_self_attention.squeeze(0), cmap="gray")
+    plt.axis("off")
+
+    plt.subplot(2, 2, 4)
+    plt.title("Decoder cross-attention")
+    plt.imshow(cross_attention.squeeze(0), cmap="gray")
+    plt.axis("off")
+
+    plt.show()

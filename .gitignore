@@ -1,6 +1,6 @@
 resources
 wandb
-
+weights
 
 # General
 .DS_Store

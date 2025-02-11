@@ -19,9 +19,10 @@ class EncoderLayer(nn.Module):
         self.norm2 = nn.LayerNorm(d_model)
 
     def forward(self, x):
-        x = self.norm1(x + self.self_attention(x, x))
+        x1, self_attention = self.self_attention(x, x)
+        x = self.norm1(x + x1)
         x = self.norm2(x + self.feed_forward(x))
-        return x
+        return x, self_attention
 
 
 class Encoder(nn.Module):
@@ -37,5 +38,5 @@ class Encoder(nn.Module):
         x = self.embedder(x)
         x = self.positional_encoder(x)
         for layer in self.encoder_layers:
-            x = layer(x)
-        return x
+            x, self_attention = layer(x)
+        return x, self_attention

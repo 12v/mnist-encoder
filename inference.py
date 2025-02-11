@@ -3,7 +3,7 @@ import torch
 from data.images import create_patches, flatten_patches
 from data.mnist import get_images_and_labels, test_data
 from data.tokenizer import tokenize, vocab
-from data.visualization import visualize_image
+from data.visualization import visualize_attention
 from model.decoder import Decoder
 from train import (
     attention_depth,
@@ -46,12 +46,30 @@ with torch.no_grad():
         input_sequence = ["<start>"]
         output_sequence = []
 
+        encoder_self_attention = None
+        decode_self_attention = None
+        decode_cross_attention = None
+
         for i in range(decoder_length):
             tokens = torch.stack((tokenize(input_sequence),))
-            print("tokens", tokens.shape)
-            output = model(patches, tokens)
-            input_sequence.append(vocab[torch.argmax(output[0], dim=1)[i].item()])
-            output_sequence.append(vocab[torch.argmax(output[0], dim=1)[i].item()])
+            (
+                output,
+                encoder_self_attention,
+                decode_self_attention,
+                decode_cross_attention,
+            ) = model(patches, tokens)
+
+            output_token = torch.argmax(output[0], dim=1)[i].item()
+            output_text = vocab[output_token]
+            input_sequence.append(output_text)
+            output_sequence.append(output_text)
+
+            if i == decoder_length - 1:
+                encoder_self_attention = encoder_self_attention
+                decode_self_attention = decode_self_attention
+                decode_cross_attention = decode_cross_attention
 
         print(output_sequence)
-        visualize_image(image)
+        visualize_attention(
+            image, encoder_self_attention, decode_self_attention, decode_cross_attention
+        )
