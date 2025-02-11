@@ -3,12 +3,11 @@ import torch
 from data import (
     create_patches,
     generate_grids,
-    tokenize,
     train_data,
-    visualize_grid,
-    vocab,
 )
 from decoder import Decoder
+from tokenizer import tokenize, vocab
+from visualization import visualize_grid
 
 model = Decoder(
     attention_depth=24,

@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 from attention import Attention
-from data import vocab
 from encoder import Encoder
 from positional_encoder import PositionalEncoder
+from tokenizer import vocab
 
 
 class DecoderLayer(nn.Module):
