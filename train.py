@@ -41,7 +41,7 @@ def train():
     val_dataloader = DataLoader(
         Dataset(test_data, patch_dim),
         batch_size=batch_size,
-        shuffle=False,
+        shuffle=True,
         drop_last=True,
     )
 
