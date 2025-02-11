@@ -1,6 +1,5 @@
-def create_patches(image):
-    patch_count = 4
-    patch_size = image.shape[0] // patch_count
+def create_patches(image, patch_dim):
+    patch_size = image.shape[0] // patch_dim
 
     image = image.unfold(0, patch_size, patch_size)
     image = image.unfold(1, patch_size, patch_size)
@@ -10,6 +9,7 @@ def create_patches(image):
     return patches
 
 
-def flatten_patches(patches):
-    flat_patches = patches.reshape(16, -1)
+def flatten_patches(patches, patch_dim):
+    patch_count = patch_dim * patch_dim
+    flat_patches = patches.reshape(patch_count, -1)
     return flat_patches

@@ -8,6 +8,21 @@ from data.tokenizer import vocab
 from model.decoder import Decoder
 from model.utils import device
 
+patch_dim = 4
+
+attention_depth = 24
+d_model_encoder = 64
+d_model_decoder = 12
+
+encoder_embedding_dim = 196
+decoder_embedding_dim = 13
+
+encoder_length = patch_dim * patch_dim
+decoder_length = 5
+
+num_encoder_layers = 6
+num_decoder_layers = 6
+
 
 def train():
     num_epochs = 20
@@ -17,33 +32,33 @@ def train():
     batch_size = 500
 
     train_dataloader = DataLoader(
-        Dataset(train_data),
+        Dataset(train_data, patch_dim),
         batch_size=batch_size,
         shuffle=True,
         drop_last=True,
     )
 
     val_dataloader = DataLoader(
-        Dataset(test_data),
+        Dataset(test_data, patch_dim),
         batch_size=batch_size,
         shuffle=False,
         drop_last=True,
     )
 
     model = Decoder(
-        attention_depth=24,
+        attention_depth=attention_depth,
         # internal dimensions
-        d_model_encoder=64,
-        d_model_decoder=12,
+        d_model_encoder=d_model_encoder,
+        d_model_decoder=d_model_decoder,
         # embedding dimensions
-        encoder_embedding_dim=196,
-        decoder_embedding_dim=13,
+        encoder_embedding_dim=encoder_embedding_dim,
+        decoder_embedding_dim=decoder_embedding_dim,
         # length of the input and output sequences
-        encoder_length=16,
-        decoder_length=5,
+        encoder_length=encoder_length,
+        decoder_length=decoder_length,
         vocab_size=len(vocab),
-        num_encoder_layers=6,
-        num_decoder_layers=6,
+        num_encoder_layers=num_encoder_layers,
+        num_decoder_layers=num_decoder_layers,
     )
 
     model.to(device)

@@ -6,11 +6,11 @@ from data.tokenizer import tokenize_input_labels, tokenize_output_labels
 
 
 class Dataset(Dataset):
-    def __init__(self, data):
+    def __init__(self, data, patch_dim):
         super().__init__()
         images, labels = get_images_and_labels(data)
-        patches = [create_patches(image) for image in images]
-        patches = [flatten_patches(patch) for patch in patches]
+        patches = [create_patches(image, patch_dim) for image in images]
+        patches = [flatten_patches(patch, patch_dim) for patch in patches]
         self.patches = patches
         self.input_labels = [tokenize_input_labels(label) for label in labels]
         self.output_labels = [tokenize_output_labels(label) for label in labels]
