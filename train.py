@@ -2,8 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from data.dataset import Dataset
-from data.mnist import test_data, train_data
+from data.mnist import Dataset, test_data, train_data
 from data.tokenizer import vocab
 from model.decoder import Decoder
 from model.utils import device
