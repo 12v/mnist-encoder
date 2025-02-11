@@ -1,10 +1,10 @@
 import torch
 
-from decoder import Decoder
-from images import create_patches, flatten_patches
-from mnist import get_images_and_labels, train_data
-from tokenizer import tokenize, vocab
-from visualization import visualize_image
+from data.images import create_patches, flatten_patches
+from data.mnist import get_images_and_labels, train_data
+from data.tokenizer import tokenize, vocab
+from data.visualization import visualize_image
+from model.decoder import Decoder
 
 model = Decoder(
     attention_depth=24,
@@ -17,9 +17,10 @@ model = Decoder(
     # length of the input and output sequences
     encoder_length=16,
     decoder_length=5,
+    vocab_size=len(vocab),
 )
 
-model.load_state_dict(torch.load("model.pth"))
+model.load_state_dict(torch.load("weights/model.pth"))
 
 model.eval()
 with torch.no_grad():

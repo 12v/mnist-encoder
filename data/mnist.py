@@ -9,13 +9,13 @@ def normalize_and_standardize(data):
 
 
 train_data = datasets.MNIST(
-    root="./data", train=True, download=True, transform=transforms.ToTensor()
+    root="./resources", train=True, download=True, transform=transforms.ToTensor()
 )
 
 train_data.data = normalize_and_standardize(train_data.data)
 
 test_data = datasets.MNIST(
-    root="./data", train=False, download=True, transform=transforms.ToTensor()
+    root="./resources", train=False, download=True, transform=transforms.ToTensor()
 )
 
 test_data.data = normalize_and_standardize(test_data.data)

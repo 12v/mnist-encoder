@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
 
-from attention import Attention
-from encoder import Encoder
-from positional_encoder import PositionalEncoder
-from tokenizer import vocab
+from model.attention import Attention
+from model.encoder import Encoder
+from model.positional_encoder import PositionalEncoder
 
 
 class DecoderLayer(nn.Module):
@@ -47,6 +46,7 @@ class Decoder(nn.Module):
         decoder_embedding_dim,
         encoder_length,
         decoder_length,
+        vocab_size,
     ):
         super().__init__()
         self.embedder = nn.Embedding(decoder_embedding_dim, d_model_decoder)
@@ -60,7 +60,7 @@ class Decoder(nn.Module):
                 for _ in range(6)
             ]
         )
-        self.output_layer = nn.Linear(d_model_decoder, len(vocab))
+        self.output_layer = nn.Linear(d_model_decoder, vocab_size)
         self.softmax = nn.Softmax(dim=-1)
 
     def compute_loss(self, patches, input_labels, output_labels):

@@ -1,7 +1,7 @@
 import torch.nn as nn
 
-from attention import Attention
-from positional_encoder import PositionalEncoder
+from model.attention import Attention
+from model.positional_encoder import PositionalEncoder
 
 
 class EncoderLayer(nn.Module):

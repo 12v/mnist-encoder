@@ -1,8 +1,8 @@
 from torch.utils.data import Dataset
 
-from images import create_patches, flatten_patches
-from mnist import get_images_and_labels
-from tokenizer import tokenize_input_labels, tokenize_output_labels
+from data.images import create_patches, flatten_patches
+from data.mnist import get_images_and_labels
+from data.tokenizer import tokenize_input_labels, tokenize_output_labels
 
 
 class Dataset(Dataset):

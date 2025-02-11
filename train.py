@@ -2,10 +2,11 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from dataset import Dataset
-from decoder import Decoder
-from mnist import train_data
-from utils import device
+from data.dataset import Dataset
+from data.mnist import train_data
+from data.tokenizer import vocab
+from model.decoder import Decoder
+from model.utils import device
 
 
 def train():
@@ -33,6 +34,7 @@ def train():
         # length of the input and output sequences
         encoder_length=16,
         decoder_length=5,
+        vocab_size=len(vocab),
     )
 
     model.to(device)
@@ -68,7 +70,7 @@ def train():
             train_loop.set_postfix(loss=f"{sum(batch_losses) / len(batch_losses):.4f}")
 
     # save the model weights
-    torch.save(model.state_dict(), "model.pth")
+    torch.save(model.state_dict(), "weights/model.pth")
 
 
 if __name__ == "__main__":
