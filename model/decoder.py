@@ -67,7 +67,6 @@ class Decoder(nn.Module):
             ]
         )
         self.output_layer = nn.Linear(d_model_decoder, vocab_size)
-        self.softmax = nn.Softmax(dim=-1)
 
     def compute_loss(self, patches, input_labels, output_labels):
         x = self.forward(patches, input_labels)
@@ -85,6 +84,5 @@ class Decoder(nn.Module):
             label_embeddings = layer(label_embeddings, image_encodings)
 
         x = self.output_layer(label_embeddings)
-        x = self.softmax(x)
 
         return x
