@@ -50,7 +50,7 @@ def get_images_and_labels(data):
     return images, labels
 
 
-class Dataset(Dataset):
+class MnistDataset(Dataset):
     def __init__(self, data, patch_dim):
         super().__init__()
         images, labels = get_images_and_labels(data)

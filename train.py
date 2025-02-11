@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from data.mnist import Dataset, test_data, train_data
+from data.mnist import MnistDataset, test_data, train_data
 from data.tokenizer import vocab
 from model.decoder import Decoder
 from model.utils import device
@@ -31,7 +31,7 @@ def train():
     batch_size = 500
 
     val_dataloader = DataLoader(
-        Dataset(test_data, patch_dim),
+        MnistDataset(test_data, patch_dim),
         batch_size=batch_size,
         shuffle=True,
         drop_last=True,
@@ -62,7 +62,7 @@ def train():
     # Training loop
     for epoch in range(num_epochs):
         train_dataloader = DataLoader(
-            Dataset(train_data, patch_dim),
+            MnistDataset(train_data, patch_dim),
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
