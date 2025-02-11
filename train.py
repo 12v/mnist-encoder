@@ -31,13 +31,6 @@ def train():
 
     batch_size = 500
 
-    train_dataloader = DataLoader(
-        Dataset(train_data, patch_dim),
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=True,
-    )
-
     val_dataloader = DataLoader(
         Dataset(test_data, patch_dim),
         batch_size=batch_size,
@@ -69,6 +62,13 @@ def train():
 
     # Training loop
     for epoch in range(num_epochs):
+        train_dataloader = DataLoader(
+            Dataset(train_data, patch_dim),
+            batch_size=batch_size,
+            shuffle=True,
+            drop_last=True,
+        )
+
         batch_losses = []
 
         train_loop = tqdm(
