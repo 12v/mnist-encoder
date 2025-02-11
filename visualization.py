@@ -1,17 +1,17 @@
 import matplotlib.pyplot as plt
 
 
-def visualize(grid, labels, patches, flat_patches):
-    def visualize_grid(grid, labels):
-        plt.imshow(grid, cmap="gray", vmin=0, vmax=1)
+def visualize(image, labels, patches, flat_patches):
+    def visualize_image(image, labels):
+        plt.imshow(image, cmap="gray", vmin=0, vmax=1)
 
         i = 0
-        grid_size = grid.shape[0]
+        image_size = image.shape[0]
         print(labels)
         for r in [0, 1]:
             for c in [0, 1]:
-                x_coord = c * grid_size / 2
-                y_coord = r * grid_size / 2
+                x_coord = c * image_size / 2
+                y_coord = r * image_size / 2
                 plt.text(
                     x_coord,
                     y_coord,
@@ -41,7 +41,7 @@ def visualize(grid, labels, patches, flat_patches):
 
     plt.figure()
     plt.subplot(3, 1, 1)
-    visualize_grid(grid, labels)
+    visualize_image(image, labels)
     plt.subplot(3, 1, 2)
     visualize_patches(patches)
     plt.subplot(3, 1, 3)
@@ -49,7 +49,7 @@ def visualize(grid, labels, patches, flat_patches):
     plt.show()
 
 
-def visualize_grid(grid):
-    plt.imshow(grid, cmap="gray")
+def visualize_image(image):
+    plt.imshow(image, cmap="gray")
     plt.axis("off")
     plt.show()

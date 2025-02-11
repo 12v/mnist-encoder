@@ -1,14 +1,15 @@
 from torch.utils.data import Dataset
 
-from data import create_patches, flatten_patches, get_grids
+from images import create_patches, flatten_patches
+from mnist import get_images_and_labels
 from tokenizer import tokenize_input_labels, tokenize_output_labels
 
 
 class Dataset(Dataset):
     def __init__(self, data):
         super().__init__()
-        grids, labels = get_grids(data)
-        patches = [create_patches(grid) for grid in grids]
+        images, labels = get_images_and_labels(data)
+        patches = [create_patches(image) for image in images]
         patches = [flatten_patches(patch) for patch in patches]
         self.patches = patches
         self.input_labels = [tokenize_input_labels(label) for label in labels]

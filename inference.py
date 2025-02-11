@@ -1,14 +1,10 @@
 import torch
 
-from data import (
-    create_patches,
-    flatten_patches,
-    get_grids,
-    train_data,
-)
 from decoder import Decoder
+from images import create_patches, flatten_patches
+from mnist import get_images_and_labels, train_data
 from tokenizer import tokenize, vocab
-from visualization import visualize_grid
+from visualization import visualize_image
 
 model = Decoder(
     attention_depth=24,
@@ -27,9 +23,9 @@ model.load_state_dict(torch.load("model-tblr.pth"))
 
 model.eval()
 with torch.no_grad():
-    grids, _ = get_grids(train_data)
-    for grid in grids:
-        patches = create_patches(grid)
+    images, _ = get_images_and_labels(train_data)
+    for image in images:
+        patches = create_patches(image)
         patches = flatten_patches(patches)
 
         sequence = ["<start>"]
@@ -41,4 +37,4 @@ with torch.no_grad():
             sequence.append(vocab[torch.argmax(output[0], dim=1)[i].item()])
 
         print(sequence[1:])
-        visualize_grid(grid)
+        visualize_image(image)

@@ -1,24 +1,29 @@
 import torch
 from torchvision import datasets, transforms
 
-from visualization import visualize
+
+def normalize_and_standardize(data):
+    data = (data - 127.5) / 127.5
+    data = (data - data.mean()) / data.std()
+    return data
+
 
 train_data = datasets.MNIST(
     root="./data", train=True, download=True, transform=transforms.ToTensor()
 )
 
-train_data.data = train_data.data / 255
+train_data.data = normalize_and_standardize(train_data.data)
 
 test_data = datasets.MNIST(
     root="./data", train=False, download=True, transform=transforms.ToTensor()
 )
 
-test_data.data = test_data.data / 255
+test_data.data = normalize_and_standardize(test_data.data)
 
 
-def get_grids(data):
+def get_images_and_labels(data):
     outer_random_indices = torch.randperm(data.data.shape[0])
-    grids = []
+    images = []
     labels = []
 
     for i in range(0, data.data.shape[0], 4):
@@ -34,32 +39,7 @@ def get_grids(data):
 
         img_grid = torch.cat((left_column, right_column), dim=1)
 
-        grids.append(img_grid)
+        images.append(img_grid)
         labels.append(random_labels)
 
-    return grids, labels
-
-
-def create_patches(grid):
-    patch_count = 4
-    patch_size = grid.shape[0] // patch_count
-
-    grid = grid.unfold(0, patch_size, patch_size)
-    grid = grid.unfold(1, patch_size, patch_size)
-
-    patches = grid.reshape(-1, patch_size, patch_size)
-
-    return patches
-
-
-def flatten_patches(patches):
-    flat_patches = patches.reshape(16, -1)
-    return flat_patches
-
-
-if __name__ == "__main__":
-    grids, labels = get_grids(train_data)
-    for grid, label in zip(grids, labels):
-        patches = create_patches(grid)
-        flat_patches = flatten_patches(patches)
-        visualize(grid, label, patches, flat_patches)
+    return images, labels

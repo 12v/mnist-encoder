@@ -2,9 +2,9 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from data import train_data
 from dataset import Dataset
 from decoder import Decoder
+from mnist import train_data
 from utils import device
 
 
