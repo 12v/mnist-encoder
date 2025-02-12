@@ -8,10 +8,10 @@ class Attention(nn.Module):
         attention_depth,
         query_dim,
         key_value_dim,
-        mask=False,
+        causal_mask=False,
     ):
         super().__init__()
-        self.mask = mask
+        self.causal_mask = causal_mask
         self.attention_depth = attention_depth
         self.query_weights = nn.Linear(query_dim, attention_depth)  # Query
         self.key_weights = nn.Linear(key_value_dim, attention_depth)  # Key
@@ -23,7 +23,7 @@ class Attention(nn.Module):
         attention = torch.matmul(query, key.transpose(-2, -1)) / torch.sqrt(
             torch.tensor(self.attention_depth)
         )
-        if self.mask:
+        if self.causal_mask:
             attention = attention.masked_fill(
                 torch.triu(torch.ones_like(attention), diagonal=1) == 1,
                 float("-inf"),

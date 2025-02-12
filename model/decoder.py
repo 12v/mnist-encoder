@@ -13,7 +13,7 @@ class DecoderLayer(nn.Module):
             attention_depth=attention_depth,
             query_dim=d_model_decoder,
             key_value_dim=d_model_decoder,
-            mask=True,
+            causal_mask=True,
         )
         self.cross_attention = Attention(
             attention_depth=attention_depth,
