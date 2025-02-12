@@ -1,4 +1,5 @@
 import os
+import pickle
 import random
 
 import sentencepiece as spm
@@ -11,18 +12,74 @@ from torchvision.transforms import ToTensor
 from data.images import create_patches, flatten_patches, normalize_and_standardize
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
+pickle_path = os.path.join(script_dir, "flickr30k.pkl.gz")
 
-ds = load_dataset("nlphuji/flickr30k", split="test")
+width = 500
+height = 500
+
+
+def pad_photo(photo):
+    if photo.size[0] == width and photo.size[1] == height:
+        return photo
+
+    else:
+        original_width, original_height = photo.size
+        new_image = Image.new("RGB", (width, height), (0, 0, 0))
+        new_image.paste(
+            photo,
+            (
+                (width - original_width) // 2,
+                (height - original_height) // 2,
+            ),
+        )
+        return new_image
+
+
+def prep_patches(photo, patch_dim):
+    photo = pad_photo(photo)
+    photo = photo.split()[0]
+    tensor = ToTensor()(photo)
+    tensor = normalize_and_standardize(tensor.squeeze(0))
+    patches = create_patches(tensor, patch_dim)
+    patches = flatten_patches(patches, patch_dim)
+    return patches
+
+
+if not os.path.exists(pickle_path):
+    ds = load_dataset("nlphuji/flickr30k", split="test", trust_remote_code=True)
+
+    prepped_train_ds = []
+    total_rows = len(ds)
+
+    for idx, row in enumerate(ds):
+        # Prepare the image patches
+        image_patches = prep_patches(row["image"], 10)
+
+        # Append to the prepared dataset
+        prepped_train_ds.append({"image": image_patches, "caption": row["caption"]})
+
+        # Log progress every 100 rows
+        if (idx + 1) % 100 == 0:
+            print(f"Processed {idx + 1}/{total_rows} rows.")
+
+        if idx > 1000:
+            break
+
+    with open(pickle_path, "wb") as f:
+        pickle.dump(prepped_train_ds, f)
+
+    ds = prepped_train_ds
+else:
+    with open(pickle_path, "rb") as f:
+        ds = pickle.load(f)
+
 
 length = len(ds)
 train_length = int(length * 0.8)
 test_length = length - train_length
 
-train_ds = ds.select(range(train_length))
-test_ds = ds.select(range(train_length, length))
-
-width = 500
-height = 500
+train_ds = ds[:train_length]
+test_ds = ds[train_length:]
 
 start_token = "<s>"
 finish_token = "</s>"
@@ -72,48 +129,23 @@ class Flickr30kTokenizer:
 tokenizer = Flickr30kTokenizer(ds)
 
 
-def pad_photo(photo):
-    if photo.size[0] == width and photo.size[1] == height:
-        return photo
-
-    else:
-        original_width, original_height = photo.size
-        new_image = Image.new("RGB", (width, height), (0, 0, 0))
-        new_image.paste(
-            photo,
-            (
-                (width - original_width) // 2,
-                (height - original_height) // 2,
-            ),
-        )
-        return new_image
-
-
-def image_and_caption_generator(ds, patch_dim):
+def image_and_caption_generator(ds):
     while True:
         photo_index = random.randint(0, len(ds) - 1)
-        photo = ds[photo_index]["image"]
+        patches = ds[photo_index]["image"]
         captions = ds[photo_index]["caption"]
         caption = random.choice(captions)
-
-        photo = pad_photo(photo)
-        photo = photo.split()[0]
-        tensor = ToTensor()(photo)
-        tensor = normalize_and_standardize(tensor.squeeze(0))
-        patches = create_patches(tensor, patch_dim)
-        patches = flatten_patches(patches, patch_dim)
         input_caption, output_caption = tokenizer.encode(caption)
 
         yield patches, torch.tensor(input_caption), torch.tensor(output_caption)
 
 
 class Flickr30kDataset(IterableDataset):
-    def __init__(self, ds, patch_dim):
+    def __init__(self, ds):
         self.ds = ds
-        self.patch_dim = patch_dim
 
     def __iter__(self):
-        return image_and_caption_generator(self.ds, self.patch_dim)
+        return image_and_caption_generator(self.ds)
 
 
 if __name__ == "__main__":
