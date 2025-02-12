@@ -5,7 +5,7 @@ from tqdm import tqdm
 from data.mnist import MnistDataset, test_data, train_data, vocab
 from model.decoder import Decoder
 from model.utils import device
-from params import (
+from params_mnist import (
     attention_depth,
     d_model_decoder,
     d_model_encoder,

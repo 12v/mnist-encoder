@@ -4,7 +4,7 @@ from data.images import create_patches, flatten_patches
 from data.mnist import get_images_and_labels, test_data, tokenize, vocab
 from data.visualization import visualize_attention
 from model.decoder import Decoder
-from params import (
+from params_mnist import (
     attention_depth,
     d_model_decoder,
     d_model_encoder,
