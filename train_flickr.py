@@ -34,13 +34,13 @@ def train():
     batch_size = 400
 
     val_dataloader = DataLoader(
-        Flickr30kDataset(test_ds),
+        Flickr30kDataset(test_ds, patch_dim),
         batch_size=batch_size,
         drop_last=True,
     )
 
     train_dataloader = DataLoader(
-        Flickr30kDataset(train_ds),
+        Flickr30kDataset(train_ds, patch_dim),
         batch_size=batch_size,
         drop_last=True,
     )
