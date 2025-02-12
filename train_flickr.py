@@ -1,3 +1,4 @@
+import multiprocessing as mp
 import os
 
 import torch
@@ -98,11 +99,13 @@ def train():
         val_losses = []
         val_loop = tqdm(
             val_dataloader,
-            desc=f"Epoch {epoch + 1}/{num_epochs}",
+            desc=f"Validation for epoch {epoch + 1}/{num_epochs}",
             total=len(test_ds) // batch_size,
         )
 
-        for image_batch, input_label_batch, output_label_batch in val_loop:
+        for i, (image_batch, input_label_batch, output_label_batch) in enumerate(
+            val_loop
+        ):
             model.eval()
             with torch.no_grad():
                 loss = model.compute_loss(
@@ -121,4 +124,5 @@ def train():
 
 
 if __name__ == "__main__":
+    mp.set_start_method("spawn", force=True)
     train()
