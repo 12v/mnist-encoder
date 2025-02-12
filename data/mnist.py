@@ -74,6 +74,9 @@ vocab = [
     "<pad>",
 ]
 
+width = 56
+height = 56
+
 
 def tokenize_input_labels(labels):
     labels = labels.tolist()

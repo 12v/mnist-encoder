@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from data.mnist import MnistDataset, test_data, train_data, vocab
+from data.mnist import MnistDataset, height, test_data, train_data, vocab, width
 from model.decoder import Decoder
 from model.utils import device
 from params_mnist import (
@@ -10,7 +10,6 @@ from params_mnist import (
     d_model_decoder,
     d_model_encoder,
     decoder_length,
-    encoder_embedding_dim,
     encoder_length,
     num_decoder_layers,
     num_encoder_layers,
@@ -37,8 +36,7 @@ def train():
         # internal dimensions
         d_model_encoder=d_model_encoder,
         d_model_decoder=d_model_decoder,
-        # embedding dimensions
-        encoder_embedding_dim=encoder_embedding_dim,
+        encoder_embedding_dim=width * height // patch_dim // patch_dim,
         # length of the input and output sequences
         encoder_length=encoder_length,
         decoder_length=decoder_length,
