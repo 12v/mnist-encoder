@@ -1,11 +1,10 @@
 import torch
 
 from data.images import create_patches, flatten_patches
-from data.mnist import get_images_and_labels, test_data
-from data.tokenizer import tokenize, vocab
+from data.mnist import get_images_and_labels, test_data, tokenize, vocab
 from data.visualization import visualize_attention
 from model.decoder import Decoder
-from train import (
+from params import (
     attention_depth,
     d_model_decoder,
     d_model_encoder,
@@ -72,8 +71,8 @@ with torch.no_grad():
         print(output_sequence)
         visualize_attention(
             image,
-encoder_self_attention,
-decode_self_attention,
-decode_cross_attention,
+            encoder_self_attention,
+            decode_self_attention,
+            decode_cross_attention,
             output_sequence,
         )

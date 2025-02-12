@@ -2,25 +2,21 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from data.mnist import MnistDataset, test_data, train_data
-from data.tokenizer import vocab
+from data.mnist import MnistDataset, test_data, train_data, vocab
 from model.decoder import Decoder
 from model.utils import device
-
-patch_dim = 4
-
-attention_depth = 24
-d_model_encoder = 64
-d_model_decoder = 12
-
-encoder_embedding_dim = 196
-decoder_embedding_dim = 13
-
-encoder_length = patch_dim * patch_dim
-decoder_length = 5
-
-num_encoder_layers = 6
-num_decoder_layers = 6
+from params import (
+    attention_depth,
+    d_model_decoder,
+    d_model_encoder,
+    decoder_embedding_dim,
+    decoder_length,
+    encoder_embedding_dim,
+    encoder_length,
+    num_decoder_layers,
+    num_encoder_layers,
+    patch_dim,
+)
 
 
 def train():

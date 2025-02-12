@@ -2,16 +2,7 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 
-from data.images import create_patches, flatten_patches
-from data.tokenizer import tokenize_input_labels, tokenize_output_labels
-
-
-def normalize_and_standardize(data):
-    data = data.float()
-    data = data - data.mean() / data.std()
-    data = 2 * (data - data.min()) / (data.max() - data.min()) - 1
-    return data
-
+from data.images import create_patches, flatten_patches, normalize_and_standardize
 
 train_data = datasets.MNIST(
     root="./resources", train=True, download=True, transform=transforms.ToTensor()
@@ -65,3 +56,36 @@ class MnistDataset(Dataset):
 
     def __getitem__(self, index):
         return self.patches[index], self.input_labels[index], self.output_labels[index]
+
+
+vocab = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "<start>",
+    "<finish>",
+    "<pad>",
+]
+
+
+def tokenize_input_labels(labels):
+    labels = labels.tolist()
+    sentence = ["<start>"] + [str(label) for label in labels]
+    return tokenize(sentence)
+
+
+def tokenize_output_labels(labels):
+    labels = labels.tolist()
+    sentence = [str(label) for label in labels] + ["<finish>"]
+    return tokenize(sentence)
+
+
+def tokenize(labels):
+    return torch.tensor([vocab.index(c) for c in labels], dtype=torch.long)
