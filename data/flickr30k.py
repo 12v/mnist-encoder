@@ -12,7 +12,7 @@ from data.images import create_patches, flatten_patches, normalize_and_standardi
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-ds = load_dataset("nlphuji/flickr30k", split="test")
+ds = load_dataset("nlphuji/flickr30k", split="test", trust_remote_code=True)
 
 length = len(ds)
 train_length = int(length * 0.8)
