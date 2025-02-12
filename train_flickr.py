@@ -74,7 +74,12 @@ def train():
             total=len(train_ds) // batch_size,
         )
 
-        for image_batch, input_label_batch, output_label_batch in train_loop:
+        for i, (image_batch, input_label_batch, output_label_batch) in enumerate(
+            train_loop
+        ):
+            if i > len(train_ds) // batch_size:
+                break
+
             model.train()
             optimizer.zero_grad()
 
@@ -106,6 +111,9 @@ def train():
                     output_label_batch.to(device),
                 )
                 val_losses.append(loss.item())
+
+            if i > len(test_ds) // batch_size:
+                break
 
         os.makedirs("weights", exist_ok=True)
         torch.save(model.state_dict(), f"weights/model_flickr_{epoch}.pth")
