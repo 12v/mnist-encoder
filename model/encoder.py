@@ -8,7 +8,7 @@ class EncoderLayer(nn.Module):
     def __init__(self, attention_depth, d_model):
         super().__init__()
         self.self_attention = Attention(
-            attention_depth=attention_depth, d_own=d_model, d_other=d_model
+            attention_depth=attention_depth, query_dim=d_model, key_value_dim=d_model
         )
         self.feed_forward = nn.Sequential(
             nn.Linear(d_model, d_model),

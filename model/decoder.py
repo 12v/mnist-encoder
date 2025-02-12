@@ -11,14 +11,14 @@ class DecoderLayer(nn.Module):
         super().__init__()
         self.masked_self_attention = Attention(
             attention_depth=attention_depth,
-            d_own=d_model_decoder,
-            d_other=d_model_decoder,
+            query_dim=d_model_decoder,
+            key_value_dim=d_model_decoder,
             mask=True,
         )
         self.cross_attention = Attention(
             attention_depth=attention_depth,
-            d_own=d_model_decoder,
-            d_other=d_model_encoder,
+            query_dim=d_model_decoder,
+            key_value_dim=d_model_encoder,
         )
         self.feed_forward = nn.Sequential(
             nn.Linear(d_model_decoder, d_model_decoder),
