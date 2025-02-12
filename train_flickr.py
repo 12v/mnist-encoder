@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -105,6 +107,7 @@ def train():
                 )
                 val_losses.append(loss.item())
 
+        os.makedirs("weights", exist_ok=True)
         torch.save(model.state_dict(), f"weights/model_flickr_{epoch}.pth")
         print(f"Validation loss: {sum(val_losses) / len(val_losses):.4f}")
 
