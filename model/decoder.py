@@ -47,7 +47,6 @@ class Decoder(nn.Module):
         d_model_encoder,
         d_model_decoder,
         encoder_embedding_dim,
-        decoder_embedding_dim,
         encoder_length,
         decoder_length,
         num_encoder_layers,
@@ -55,7 +54,7 @@ class Decoder(nn.Module):
         vocab_size,
     ):
         super().__init__()
-        self.embedder = nn.Embedding(decoder_embedding_dim, d_model_decoder)
+        self.embedder = nn.Embedding(vocab_size, d_model_decoder)
         self.positional_encoder = PositionalEncoder(d_model_decoder, decoder_length)
         self.encoder = Encoder(
             attention_depth,

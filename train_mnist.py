@@ -9,7 +9,6 @@ from params_mnist import (
     attention_depth,
     d_model_decoder,
     d_model_encoder,
-    decoder_embedding_dim,
     decoder_length,
     encoder_embedding_dim,
     encoder_length,
@@ -40,7 +39,6 @@ def train():
         d_model_decoder=d_model_decoder,
         # embedding dimensions
         encoder_embedding_dim=encoder_embedding_dim,
-        decoder_embedding_dim=decoder_embedding_dim,
         # length of the input and output sequences
         encoder_length=encoder_length,
         decoder_length=decoder_length,
