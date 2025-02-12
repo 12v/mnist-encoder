@@ -71,5 +71,9 @@ with torch.no_grad():
 
         print(output_sequence)
         visualize_attention(
-            image, encoder_self_attention, decode_self_attention, decode_cross_attention
+            image,
+encoder_self_attention,
+decode_self_attention,
+decode_cross_attention,
+            output_sequence,
         )
