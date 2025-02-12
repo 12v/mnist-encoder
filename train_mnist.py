@@ -10,7 +10,6 @@ from params_mnist import (
     d_model_decoder,
     d_model_encoder,
     decoder_length,
-    encoder_length,
     num_decoder_layers,
     num_encoder_layers,
     patch_dim,
@@ -38,7 +37,7 @@ def train():
         d_model_decoder=d_model_decoder,
         encoder_embedding_dim=width * height // patch_dim // patch_dim,
         # length of the input and output sequences
-        encoder_length=encoder_length,
+        encoder_length=patch_dim * patch_dim,
         decoder_length=decoder_length,
         vocab_size=len(vocab),
         num_encoder_layers=num_encoder_layers,
