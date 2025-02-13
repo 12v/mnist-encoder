@@ -9,6 +9,7 @@ from torch.utils.data import IterableDataset
 from torchvision.transforms import ToTensor
 
 from data.images import create_patches, flatten_patches, normalize_and_standardize
+from model.utils import device
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -130,9 +131,9 @@ def prep_for_training(tensor, caption, patch_dim):
 
     return (
         patches,
-        torch.tensor(input_caption),
-        torch.tensor(output_caption),
-        torch.tensor(padding_mask),
+        torch.tensor(input_caption).to(device),
+        torch.tensor(output_caption).to(device),
+        torch.tensor(padding_mask).to(device),
     )
 
 
@@ -143,14 +144,16 @@ class Flickr30kDataset(IterableDataset):
 
     def __iter__(self):
         worker_info = torch.utils.data.get_worker_info()
+        dataset = self.ds
         if worker_info is not None:
             worker_id = worker_info.id
             num_workers = worker_info.num_workers
             dataset_size = len(self.ds)
             per_worker = dataset_size // num_workers
-            self.ds = self.ds[worker_id * per_worker : (worker_id + 1) * per_worker]
-
-        generator = image_and_caption_generator(self.ds)
+            dataset = self.ds.select(
+                range(worker_id * per_worker, (worker_id + 1) * per_worker)
+            )
+        generator = image_and_caption_generator(dataset)
         for photo, caption in generator:
             yield prep_for_training(photo, caption, self.patch_dim)
 
