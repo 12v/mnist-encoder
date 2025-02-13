@@ -5,23 +5,22 @@ import torch.nn as nn
 class Attention(nn.Module):
     def __init__(
         self,
-        attention_depth,
         query_dim,
         key_value_dim,
         causal_mask=False,
     ):
         super().__init__()
         self.causal_mask = causal_mask
-        self.attention_depth = attention_depth
-        self.query_weights = nn.Linear(query_dim, attention_depth)  # Query
-        self.key_weights = nn.Linear(key_value_dim, attention_depth)  # Key
-        self.value_weights = nn.Linear(key_value_dim, attention_depth)  # Value
+        self.key_value_dim = key_value_dim
+        self.query_weights = nn.Linear(query_dim, key_value_dim)  # Query
+        self.key_weights = nn.Linear(key_value_dim, key_value_dim)  # Key
+        self.value_weights = nn.Linear(key_value_dim, key_value_dim)  # Value
 
-        self.output_layer = nn.Linear(attention_depth, query_dim)
+        self.output_layer = nn.Linear(key_value_dim, query_dim)
 
     def calculate_attention(self, query, key, value, key_padding_mask):
         attention = torch.matmul(query, key.transpose(-2, -1)) / torch.sqrt(
-            torch.tensor(self.attention_depth)
+            torch.tensor(self.key_value_dim)
         )
 
         if self.causal_mask:

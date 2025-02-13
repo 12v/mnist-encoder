@@ -16,7 +16,6 @@ from data.flickr30k import (
 from model.decoder import Decoder
 from model.utils import device
 from params_flickr import (
-    attention_depth,
     d_model_decoder,
     d_model_encoder,
     decoder_length,
@@ -25,7 +24,7 @@ from params_flickr import (
     patch_dim,
 )
 
-num_workers = 6 if torch.cuda.is_available() else 0
+num_workers = 6 if torch.cuda.is_available() else 2
 persistent_workers = True if num_workers > 0 else False
 batch_size = 400 if torch.cuda.is_available() else 200
 initial_lr = 0.03 if torch.cuda.is_available() else 0.01
@@ -53,7 +52,6 @@ def train():
     )
 
     model = Decoder(
-        attention_depth=attention_depth,
         # internal dimensions
         d_model_encoder=d_model_encoder,
         d_model_decoder=d_model_decoder,

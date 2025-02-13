@@ -7,16 +7,14 @@ from model.positional_encoder import PositionalEncoder
 
 
 class DecoderLayer(nn.Module):
-    def __init__(self, attention_depth, d_model_decoder, d_model_encoder):
+    def __init__(self, d_model_decoder, d_model_encoder):
         super().__init__()
         self.masked_self_attention = Attention(
-            attention_depth=attention_depth,
             query_dim=d_model_decoder,
             key_value_dim=d_model_decoder,
             causal_mask=True,
         )
         self.cross_attention = Attention(
-            attention_depth=attention_depth,
             query_dim=d_model_decoder,
             key_value_dim=d_model_encoder,
         )
@@ -43,7 +41,6 @@ class DecoderLayer(nn.Module):
 class Decoder(nn.Module):
     def __init__(
         self,
-        attention_depth,
         d_model_encoder,
         d_model_decoder,
         encoder_embedding_dim,
@@ -57,7 +54,6 @@ class Decoder(nn.Module):
         self.embedder = nn.Embedding(vocab_size, d_model_decoder)
         self.positional_encoder = PositionalEncoder(d_model_decoder, decoder_length)
         self.encoder = Encoder(
-            attention_depth,
             d_model_encoder,
             encoder_embedding_dim,
             encoder_length,
@@ -65,7 +61,7 @@ class Decoder(nn.Module):
         )
         self.decoder_layers = nn.ModuleList(
             [
-                DecoderLayer(attention_depth, d_model_decoder, d_model_encoder)
+                DecoderLayer(d_model_decoder, d_model_encoder)
                 for _ in range(num_decoder_layers)
             ]
         )

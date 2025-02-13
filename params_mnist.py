@@ -1,6 +1,5 @@
 patch_dim = 4
 
-attention_depth = 24
 d_model_encoder = 64
 d_model_decoder = 12
 

@@ -5,11 +5,9 @@ from model.positional_encoder import PositionalEncoder
 
 
 class EncoderLayer(nn.Module):
-    def __init__(self, attention_depth, d_model):
+    def __init__(self, d_model):
         super().__init__()
-        self.self_attention = Attention(
-            attention_depth=attention_depth, query_dim=d_model, key_value_dim=d_model
-        )
+        self.self_attention = Attention(query_dim=d_model, key_value_dim=d_model)
         self.feed_forward = nn.Sequential(
             nn.Linear(d_model, d_model),
             nn.ReLU(),
@@ -26,12 +24,12 @@ class EncoderLayer(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, attention_depth, d_model, embedding_dim, length, num_layers):
+    def __init__(self, d_model, embedding_dim, length, num_layers):
         super().__init__()
         self.embedder = nn.Linear(embedding_dim, d_model)
         self.positional_encoder = PositionalEncoder(d_model, length)
         self.encoder_layers = nn.ModuleList(
-            [EncoderLayer(attention_depth, d_model) for _ in range(num_layers)]
+            [EncoderLayer(d_model) for _ in range(num_layers)]
         )
 
     def forward(self, x):

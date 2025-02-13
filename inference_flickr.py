@@ -13,7 +13,6 @@ from data.images import create_patches, flatten_patches
 from data.visualization import visualize_image
 from model.decoder import Decoder
 from params_flickr import (
-    attention_depth,
     d_model_decoder,
     d_model_encoder,
     decoder_length,
@@ -23,7 +22,6 @@ from params_flickr import (
 )
 
 model = Decoder(
-    attention_depth=attention_depth,
     # internal dimensions
     d_model_encoder=d_model_encoder,
     d_model_decoder=d_model_decoder,
@@ -36,7 +34,7 @@ model = Decoder(
     num_decoder_layers=num_decoder_layers,
 )
 
-model.load_state_dict(torch.load("weights/model_flickr_4.pth"))
+model.load_state_dict(torch.load("weights/model_flickr_0.pth"))
 
 # model.to(device)
 

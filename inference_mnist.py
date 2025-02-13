@@ -5,7 +5,6 @@ from data.mnist import get_images_and_labels, height, test_data, tokenize, vocab
 from data.visualization import visualize_attention
 from model.decoder import Decoder
 from params_mnist import (
-    attention_depth,
     d_model_decoder,
     d_model_encoder,
     decoder_length,
@@ -15,7 +14,6 @@ from params_mnist import (
 )
 
 model = Decoder(
-    attention_depth=attention_depth,
     # internal dimensions
     d_model_encoder=d_model_encoder,
     d_model_decoder=d_model_decoder,
@@ -28,7 +26,7 @@ model = Decoder(
     num_decoder_layers=num_decoder_layers,
 )
 
-model.load_state_dict(torch.load("weights/model.pth"))
+model.load_state_dict(torch.load("weights/model_mnist.pth"))
 
 model.eval()
 with torch.no_grad():
@@ -51,7 +49,7 @@ with torch.no_grad():
                 encoder_self_attention,
                 decode_self_attention,
                 decode_cross_attention,
-            ) = model(patches, tokens)
+            ) = model(patches, tokens, [])
 
             output_token = torch.argmax(output[0], dim=1)[i].item()
             output_text = vocab[output_token]

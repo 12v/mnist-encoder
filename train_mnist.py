@@ -8,7 +8,6 @@ from data.mnist import MnistDataset, height, test_data, train_data, vocab, width
 from model.decoder import Decoder
 from model.utils import device
 from params_mnist import (
-    attention_depth,
     d_model_decoder,
     d_model_encoder,
     decoder_length,
@@ -33,7 +32,6 @@ def train():
     )
 
     model = Decoder(
-        attention_depth=attention_depth,
         # internal dimensions
         d_model_encoder=d_model_encoder,
         d_model_decoder=d_model_decoder,
@@ -77,6 +75,7 @@ def train():
                 image_batch.to(device),
                 input_label_batch.to(device),
                 output_label_batch.to(device),
+                [],
             )
 
             loss.backward()
@@ -93,6 +92,7 @@ def train():
                     image_batch.to(device),
                     input_label_batch.to(device),
                     output_label_batch.to(device),
+                    [],
                 )
                 val_losses.append(loss.item())
 
