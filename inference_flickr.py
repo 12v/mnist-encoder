@@ -1,6 +1,8 @@
 import torch
+import torch.nn.functional as F
 
 from data.flickr30k import (
+    finish_token,
     height,
     image_and_caption_generator,
     start_token,
@@ -38,7 +40,12 @@ model = Decoder(
 )
 
 
-model.load_state_dict(torch.load("weights/model_flickr_0_gpu.pth", map_location=device))
+model.load_state_dict(
+    torch.load("weights/model_flickr_0_gpu_vocab2k.pth", map_location=device)
+)
+
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total Parameters: {total_params}")
 
 model.to(device)
 
@@ -68,23 +75,25 @@ with torch.no_grad():
                 torch.ones_like(tokens).to(device),
             )
 
-            print(output[0][0][1:])
-            print(torch.argmax(output[0][0][1:], dim=0))
-            output_token = torch.argmax(output[0][0][1:], dim=0).item() + 1
+            softmax_output = F.softmax(output[0][0][1:], dim=-1)
+            output_token = torch.multinomial(softmax_output, 1).item()
+
             input_tokens.append(output_token)
             output_tokens.append(output_token)
 
-            print(output_tokens)
+            print(output_tokens, end="\r")
             output_text = tokenizer.decode(output_tokens)
 
-            if i == decoder_length - 1:
-                encoder_self_attention = encoder_self_attention
-                decode_self_attention = decode_self_attention
-                decode_cross_attention = decode_cross_attention
+            encoder_self_attention = encoder_self_attention
+            decode_self_attention = decode_self_attention
+            decode_cross_attention = decode_cross_attention
 
+            if output_token == tokenizer.get_id_for_token(finish_token):
+                break
+
+        print("\n")
         print(output_text)
         visualize_image(image)
-        exit()
         # visualize_attention(
         #     image,
         #     encoder_self_attention,
@@ -92,4 +101,3 @@ with torch.no_grad():
         #     decode_cross_attention,
         #     output_text,
         # )
-        visualize_image(image)
