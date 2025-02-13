@@ -1,7 +1,7 @@
-patch_dim = 10
+patch_dim = 4
 
-d_model_encoder = 1024
-d_model_decoder = 512
+d_model_encoder = 2048
+d_model_decoder = 1024
 
 decoder_length = 50
 

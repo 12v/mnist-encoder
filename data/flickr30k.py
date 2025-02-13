@@ -28,7 +28,7 @@ start_token = "<s>"
 finish_token = "</s>"
 padding_token = "<pad>"
 
-vocab_size = 10000
+vocab_size = 2000
 
 
 class Flickr30kTokenizer:
