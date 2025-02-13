@@ -25,8 +25,7 @@ from params_flickr import (
 )
 
 num_workers = 6 if torch.cuda.is_available() else 2
-persistent_workers = True if num_workers > 0 else False
-batch_size = 400 if torch.cuda.is_available() else 200
+batch_size = 600 if torch.cuda.is_available() else 200
 initial_lr = 0.03 if torch.cuda.is_available() else 0.01
 
 
@@ -40,7 +39,6 @@ def train():
         batch_size=batch_size,
         drop_last=True,
         num_workers=num_workers,
-        persistent_workers=persistent_workers,
     )
 
     train_dataloader = DataLoader(
@@ -48,7 +46,6 @@ def train():
         batch_size=batch_size,
         drop_last=True,
         num_workers=num_workers,
-        persistent_workers=persistent_workers,
     )
 
     model = Decoder(
