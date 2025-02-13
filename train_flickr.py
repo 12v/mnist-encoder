@@ -56,7 +56,7 @@ def train():
         # internal dimensions
         d_model_encoder=d_model_encoder,
         d_model_decoder=d_model_decoder,
-        encoder_embedding_dim=width * height // patch_dim // patch_dim,
+        encoder_embedding_dim=width * height * 3 // patch_dim // patch_dim,
         # length of the input and output sequences
         encoder_length=patch_dim * patch_dim,
         decoder_length=decoder_length,

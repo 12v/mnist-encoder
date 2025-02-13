@@ -116,7 +116,6 @@ def image_and_caption_generator(ds):
         caption = ds[photo_index]["caption"][caption_index]
 
         photo = pad_photo(photo)
-        photo = photo.convert("L")
         photo = ToTensor()(photo)
         photo = normalize_and_standardize(photo.squeeze(0))
 

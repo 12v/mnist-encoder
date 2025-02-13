@@ -77,7 +77,7 @@ def train():
                 image_batch.to(device),
                 input_label_batch.to(device),
                 output_label_batch.to(device),
-                [],
+                torch.ones_like(input_label_batch).to(device),
             )
 
             loss.backward()
@@ -94,7 +94,7 @@ def train():
                     image_batch.to(device),
                     input_label_batch.to(device),
                     output_label_batch.to(device),
-                    [],
+                    torch.ones_like(input_label_batch).to(device),
                 )
                 val_losses.append(loss.item())
 
