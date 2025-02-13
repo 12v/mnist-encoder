@@ -13,6 +13,7 @@ from params_mnist import (
     decoder_length,
     num_decoder_layers,
     num_encoder_layers,
+    num_heads,
     patch_dim,
 )
 
@@ -42,6 +43,7 @@ def train():
         vocab_size=len(vocab),
         num_encoder_layers=num_encoder_layers,
         num_decoder_layers=num_decoder_layers,
+        num_heads=num_heads,
     )
 
     model.to(device)

@@ -10,6 +10,7 @@ from params_mnist import (
     decoder_length,
     num_decoder_layers,
     num_encoder_layers,
+    num_heads,
     patch_dim,
 )
 
@@ -24,6 +25,7 @@ model = Decoder(
     vocab_size=len(vocab),
     num_encoder_layers=num_encoder_layers,
     num_decoder_layers=num_decoder_layers,
+    num_heads=num_heads,
 )
 
 model.load_state_dict(torch.load("weights/model_mnist.pth"))
@@ -49,7 +51,7 @@ with torch.no_grad():
                 encoder_self_attention,
                 decode_self_attention,
                 decode_cross_attention,
-            ) = model(patches, tokens, [])
+            ) = model(patches, tokens, torch.ones_like(tokens))
 
             output_token = torch.argmax(output[0], dim=1)[i].item()
             output_text = vocab[output_token]

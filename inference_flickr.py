@@ -12,12 +12,14 @@ from data.flickr30k import (
 from data.images import create_patches, flatten_patches
 from data.visualization import visualize_image
 from model.decoder import Decoder
+from model.utils import device
 from params_flickr import (
     d_model_decoder,
     d_model_encoder,
     decoder_length,
     num_decoder_layers,
     num_encoder_layers,
+    num_heads,
     patch_dim,
 )
 
@@ -32,11 +34,13 @@ model = Decoder(
     vocab_size=vocab_size,
     num_encoder_layers=num_encoder_layers,
     num_decoder_layers=num_decoder_layers,
+    num_heads=num_heads,
 )
 
-model.load_state_dict(torch.load("weights/model_flickr_0.pth"))
 
-# model.to(device)
+model.load_state_dict(torch.load("weights/model_flickr_0_gpu.pth", map_location=device))
+
+model.to(device)
 
 model.eval()
 with torch.no_grad():
@@ -58,7 +62,11 @@ with torch.no_grad():
                 encoder_self_attention,
                 decode_self_attention,
                 decode_cross_attention,
-            ) = model(patches.unsqueeze(0), tokens)
+            ) = model(
+                patches.unsqueeze(0).to(device),
+                tokens.to(device),
+                torch.ones_like(tokens).to(device),
+            )
 
             print(output[0][0][1:])
             print(torch.argmax(output[0][0][1:], dim=0))

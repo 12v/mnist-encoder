@@ -7,3 +7,5 @@ decoder_length = 50
 
 num_encoder_layers = 12
 num_decoder_layers = 12
+
+num_heads = 8

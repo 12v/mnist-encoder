@@ -1,4 +1,3 @@
-import multiprocessing as mp
 import os
 
 import torch
@@ -21,13 +20,14 @@ from params_flickr import (
     decoder_length,
     num_decoder_layers,
     num_encoder_layers,
+    num_heads,
     patch_dim,
 )
 
 num_workers = 4 if torch.cuda.is_available() else 1
 batch_size = 500 if torch.cuda.is_available() else 2
 initial_lr = 0.03 if torch.cuda.is_available() else 0.01
-# if only to prevent the data being reloaded from HF an timing out :(
+# if only to prevent the data being reloaded from HF and timing out :(
 persistent_workers = True if torch.cuda.is_available() else False
 
 
@@ -63,6 +63,7 @@ def train():
         vocab_size=vocab_size,
         num_encoder_layers=num_encoder_layers,
         num_decoder_layers=num_decoder_layers,
+        num_heads=num_heads,
     )
 
     model.to(device)
@@ -132,5 +133,5 @@ def train():
 
 
 if __name__ == "__main__":
-    mp.set_start_method("spawn", force=True)
+    # mp.set_start_method("spawn", force=True)
     train()
