@@ -79,13 +79,13 @@ def visualize_attention(
     )
     for i in range(16):
         ax = plt.Subplot(fig, inner[i])
-        ax.imshow(encoder_self_attention.squeeze(0)[i].reshape(4, 4))
+        ax.imshow(encoder_self_attention.squeeze(0).sum(dim=0)[i].reshape(4, 4))
         ax.axis("off")
         fig.add_subplot(ax)
 
     ax = plt.Subplot(fig, outer[2])
     ax.set_title("Decoder self-attention", fontsize=12)
-    ax.imshow(self_attention.squeeze(0))
+    ax.imshow(self_attention.squeeze(0).sum(dim=0))
     ax.axis("off")
     fig.add_subplot(ax)
 
@@ -98,7 +98,7 @@ def visualize_attention(
     )
     for i in range(5):
         ax = plt.Subplot(fig, inner[i])
-        ax.imshow(cross_attention.squeeze(0)[i].reshape(4, 4))
+        ax.imshow(cross_attention.squeeze(0).sum(dim=0)[i].reshape(4, 4))
         ax.axis("off")
         fig.add_subplot(ax)
     plt.show()
