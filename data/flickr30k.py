@@ -9,7 +9,6 @@ from torch.utils.data import IterableDataset
 from torchvision.transforms import ToTensor
 
 from data.images import create_patches, flatten_patches, normalize_and_standardize
-from model.utils import device
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -117,7 +116,7 @@ def image_and_caption_generator(ds):
         caption = ds[photo_index]["caption"][caption_index]
 
         photo = pad_photo(photo)
-        photo = photo.split()[0]
+        photo = photo.convert("L")
         photo = ToTensor()(photo)
         photo = normalize_and_standardize(photo.squeeze(0))
 
@@ -131,9 +130,9 @@ def prep_for_training(tensor, caption, patch_dim):
 
     return (
         patches,
-        torch.tensor(input_caption).to(device),
-        torch.tensor(output_caption).to(device),
-        torch.tensor(padding_mask).to(device),
+        torch.tensor(input_caption),
+        torch.tensor(output_caption),
+        torch.tensor(padding_mask),
     )
 
 
