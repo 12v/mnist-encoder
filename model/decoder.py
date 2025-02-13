@@ -29,12 +29,12 @@ class DecoderLayer(nn.Module):
         self.norm2 = nn.LayerNorm(d_model_decoder)
         self.norm3 = nn.LayerNorm(d_model_decoder)
 
-    def forward(self, label_embeddings, image_encodings):
+    def forward(self, label_embeddings, image_encodings, padding_mask):
         x, self_attention = self.masked_self_attention(
-            label_embeddings, label_embeddings
+            label_embeddings, label_embeddings, padding_mask
         )
         x = self.norm1(label_embeddings + x)
-        x1, cross_attention = self.cross_attention(x, image_encodings)
+        x1, cross_attention = self.cross_attention(x, image_encodings, padding_mask)
         x = self.norm2(x + x1)
         x = self.norm3(x + self.feed_forward(x))
         return x, self_attention, cross_attention
@@ -71,13 +71,13 @@ class Decoder(nn.Module):
         )
         self.output_layer = nn.Linear(d_model_decoder, vocab_size)
 
-    def compute_loss(self, patches, input_labels, output_labels):
-        x, _, _, _ = self.forward(patches, input_labels)
+    def compute_loss(self, patches, input_labels, output_labels, padding_mask):
+        x, _, _, _ = self.forward(patches, input_labels, padding_mask)
         x = torch.permute(x, (0, 2, 1))
 
         return nn.CrossEntropyLoss()(x, output_labels)
 
-    def forward(self, patches, input_labels):
+    def forward(self, patches, input_labels, padding_mask):
         image_encodings, encoder_self_attention = self.encoder(patches)
 
         label_embeddings = self.embedder(input_labels)
@@ -85,7 +85,7 @@ class Decoder(nn.Module):
 
         for layer in self.decoder_layers:
             label_embeddings, decoder_self_attention, decoder_cross_attention = layer(
-                label_embeddings, image_encodings
+                label_embeddings, image_encodings, padding_mask
             )
 
         x = self.output_layer(label_embeddings)

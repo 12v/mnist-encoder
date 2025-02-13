@@ -62,11 +62,22 @@ class Flickr30kTokenizer:
 
     def encode(self, caption, length=50):
         tokens = self.sp.encode(caption)
-        tokens = tokens[:length]
-        tokens = tokens + [self.sp.piece_to_id("<unk>")] * (length - len(tokens))
-        return [self.sp.piece_to_id(start_token)] + tokens, tokens + [
-            self.sp.piece_to_id(finish_token)
-        ]
+        tokens = tokens[: length - 1]
+
+        padding_id = self.sp.piece_to_id("<unk>")
+
+        input_encoding = [self.sp.piece_to_id(start_token)] + tokens
+        output_encoding = tokens + [self.sp.piece_to_id(finish_token)]
+
+        padded_input_encoding = input_encoding + [padding_id] * (
+            length - len(input_encoding)
+        )
+        padded_output_encoding = output_encoding + [padding_id] * (
+            length - len(output_encoding)
+        )
+        padding_mask = [1] * len(input_encoding) + [0] * (length - len(input_encoding))
+
+        return padded_input_encoding, padded_output_encoding, padding_mask
 
     def get_id_for_token(self, token):
         return self.sp.piece_to_id(token)
@@ -93,26 +104,36 @@ def pad_photo(photo):
 
 
 def image_and_caption_generator(ds):
-    while True:
-        photo_index = random.randint(0, len(ds) - 1)
+    options = []
+    for i in range(len(ds)):
+        for j in range(5):
+            options.append((i, j))
+
+    random.shuffle(options)
+
+    for photo_index, caption_index in options:
         photo = ds[photo_index]["image"]
-        captions = ds[photo_index]["caption"]
-        caption = random.choice(captions)
+        caption = ds[photo_index]["caption"][caption_index]
 
         photo = pad_photo(photo)
         photo = photo.split()[0]
-        tensor = ToTensor()(photo)
-        tensor = normalize_and_standardize(tensor.squeeze(0))
+        photo = ToTensor()(photo)
+        photo = normalize_and_standardize(photo.squeeze(0))
 
-        yield tensor, caption
+        yield photo, caption
 
 
 def prep_for_training(tensor, caption, patch_dim):
     patches = create_patches(tensor, patch_dim)
     patches = flatten_patches(patches, patch_dim)
-    input_caption, output_caption = tokenizer.encode(caption)
+    input_caption, output_caption, padding_mask = tokenizer.encode(caption)
 
-    return patches, torch.tensor(input_caption), torch.tensor(output_caption)
+    return (
+        patches,
+        torch.tensor(input_caption),
+        torch.tensor(output_caption),
+        torch.tensor(padding_mask),
+    )
 
 
 class Flickr30kDataset(IterableDataset):

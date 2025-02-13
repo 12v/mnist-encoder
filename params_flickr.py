@@ -1,10 +1,10 @@
 patch_dim = 10
 
-attention_depth = 24
-d_model_encoder = 64
-d_model_decoder = 12
+attention_depth = 48
+d_model_encoder = 1024
+d_model_decoder = 512
 
-decoder_length = 51
+decoder_length = 50
 
-num_encoder_layers = 6
-num_decoder_layers = 6
+num_encoder_layers = 12
+num_decoder_layers = 12
