@@ -24,9 +24,11 @@ from params_flickr import (
     patch_dim,
 )
 
-num_workers = 6 if torch.cuda.is_available() else 2
-batch_size = 600 if torch.cuda.is_available() else 200
+num_workers = 4 if torch.cuda.is_available() else 1
+batch_size = 500 if torch.cuda.is_available() else 2
 initial_lr = 0.03 if torch.cuda.is_available() else 0.01
+# if only to prevent the data being reloaded from HF an timing out :(
+persistent_workers = True if torch.cuda.is_available() else False
 
 
 def train():
@@ -39,6 +41,7 @@ def train():
         batch_size=batch_size,
         drop_last=True,
         num_workers=num_workers,
+        persistent_workers=persistent_workers,
     )
 
     train_dataloader = DataLoader(
@@ -46,6 +49,7 @@ def train():
         batch_size=batch_size,
         drop_last=True,
         num_workers=num_workers,
+        persistent_workers=persistent_workers,
     )
 
     model = Decoder(
@@ -81,7 +85,7 @@ def train():
             image_batch,
             input_label_batch,
             output_label_batch,
-            padding_mask,
+            padding_mask_batch,
         ) in train_loop:
             model.train()
             optimizer.zero_grad()
@@ -90,7 +94,7 @@ def train():
                 image_batch.to(device),
                 input_label_batch.to(device),
                 output_label_batch.to(device),
-                padding_mask.to(device),
+                padding_mask_batch.to(device),
             )
 
             loss.backward()
@@ -110,7 +114,7 @@ def train():
             image_batch,
             input_label_batch,
             output_label_batch,
-            padding_mask,
+            padding_mask_batch,
         ) in val_loop:
             model.eval()
             with torch.no_grad():
@@ -118,7 +122,7 @@ def train():
                     image_batch.to(device),
                     input_label_batch.to(device),
                     output_label_batch.to(device),
-                    padding_mask.to(device),
+                    padding_mask_batch.to(device),
                 )
                 val_losses.append(loss.item())
 

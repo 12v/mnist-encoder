@@ -22,6 +22,14 @@ class Attention(nn.Module):
         attention = torch.matmul(query, key.transpose(-2, -1)) / torch.sqrt(
             torch.tensor(self.key_value_dim)
         )
+        if key_padding_mask is not None:
+            key_padding_mask = key_padding_mask.unsqueeze(1)
+            expanded_key_padding_mask = key_padding_mask.expand(
+                -1, attention.shape[1], -1
+            )
+            attention = attention.masked_fill(
+                expanded_key_padding_mask == 0, float("-inf")
+            )
 
         if self.causal_mask:
             attention = attention.masked_fill(

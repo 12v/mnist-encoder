@@ -32,7 +32,7 @@ class DecoderLayer(nn.Module):
             label_embeddings, label_embeddings, padding_mask
         )
         x = self.norm1(label_embeddings + x)
-        x1, cross_attention = self.cross_attention(x, image_encodings, padding_mask)
+        x1, cross_attention = self.cross_attention(x, image_encodings)
         x = self.norm2(x + x1)
         x = self.norm3(x + self.feed_forward(x))
         return x, self_attention, cross_attention
