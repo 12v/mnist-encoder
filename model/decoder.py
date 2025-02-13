@@ -75,7 +75,15 @@ class Decoder(nn.Module):
         x, _, _, _ = self.forward(patches, input_labels, padding_mask)
         x = torch.permute(x, (0, 2, 1))
 
-        return nn.CrossEntropyLoss()(x, output_labels)
+        loss = nn.CrossEntropyLoss(reduction="none")(x, output_labels)
+
+        loss = loss * padding_mask
+
+        masked_loss_sum = loss.sum()
+        num_non_padding = padding_mask.sum()
+        final_loss = masked_loss_sum / num_non_padding
+
+        return final_loss
 
     def forward(self, patches, input_labels, padding_mask):
         image_encodings, encoder_self_attention = self.encoder(patches)
