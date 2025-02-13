@@ -26,6 +26,7 @@ height = 500
 
 start_token = "<s>"
 finish_token = "</s>"
+padding_token = "<pad>"
 
 vocab_size = 10000
 
@@ -55,6 +56,7 @@ class Flickr30kTokenizer:
                 input=corpus_path,
                 model_writer=f,
                 vocab_size=vocab_size,
+                control_symbols=[padding_token],
             )
 
     def decode(self, tokens):
@@ -64,7 +66,7 @@ class Flickr30kTokenizer:
         tokens = self.sp.encode(caption)
         tokens = tokens[: length - 1]
 
-        padding_id = self.sp.piece_to_id("<unk>")
+        padding_id = self.sp.piece_to_id(padding_token)
 
         input_encoding = [self.sp.piece_to_id(start_token)] + tokens
         output_encoding = tokens + [self.sp.piece_to_id(finish_token)]
