@@ -142,8 +142,16 @@ class Flickr30kDataset(IterableDataset):
         self.patch_dim = patch_dim
 
     def __iter__(self):
-        while True:
-            photo, caption = next(image_and_caption_generator(self.ds))
+        worker_info = torch.utils.data.get_worker_info()
+        if worker_info is not None:
+            worker_id = worker_info.id
+            num_workers = worker_info.num_workers
+            dataset_size = len(self.ds)
+            per_worker = dataset_size // num_workers
+            self.ds = self.ds[worker_id * per_worker : (worker_id + 1) * per_worker]
+
+        generator = image_and_caption_generator(self.ds)
+        for photo, caption in generator:
             yield prep_for_training(photo, caption, self.patch_dim)
 
 
