@@ -124,13 +124,32 @@ def image_and_caption_generator(ds):
         yield photo, caption
 
 
-def prep_for_training(tensor, caption, patch_dim):
+def image_generator(ds):
+    options = []
+    for i in range(len(ds)):
+        options.append(i)
+
+    random.shuffle(options)
+
+    for photo_index in options:
+        photo = ds[photo_index]["image"]
+
+        photo = pad_photo(photo)
+        photo = ToTensor()(photo)
+        photo = normalize_and_standardize(photo.squeeze(0))
+
+        yield photo
+
+
+def prep_image(tensor, patch_dim):
     patches = create_patches(tensor, patch_dim)
     patches = flatten_patches(patches, patch_dim)
-    input_caption, output_caption, padding_mask = tokenizer.encode(caption)
+    return patches
 
+
+def prep_caption(caption):
+    input_caption, output_caption, padding_mask = tokenizer.encode(caption)
     return (
-        patches,
         torch.tensor(input_caption),
         torch.tensor(output_caption),
         torch.tensor(padding_mask),
@@ -155,7 +174,30 @@ class Flickr30kDataset(IterableDataset):
             )
         generator = image_and_caption_generator(dataset)
         for photo, caption in generator:
-            yield prep_for_training(photo, caption, self.patch_dim)
+            prepped_image = prep_image(photo, self.patch_dim)
+            input_caption, output_caption, padding_mask = prep_caption(caption)
+            yield prepped_image, input_caption, output_caption, padding_mask
+
+
+class Flickr30kEncoderDataset(IterableDataset):
+    def __init__(self, ds, patch_dim):
+        self.ds = ds
+        self.patch_dim = patch_dim
+
+    def __iter__(self):
+        worker_info = torch.utils.data.get_worker_info()
+        dataset = self.ds
+        if worker_info is not None:
+            worker_id = worker_info.id
+            num_workers = worker_info.num_workers
+            dataset_size = len(self.ds)
+            per_worker = dataset_size // num_workers
+            dataset = self.ds.select(
+                range(worker_id * per_worker, (worker_id + 1) * per_worker)
+            )
+        generator = image_generator(dataset)
+        for photo in generator:
+            yield prep_image(photo, self.patch_dim)
 
 
 if __name__ == "__main__":

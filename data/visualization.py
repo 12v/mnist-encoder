@@ -50,6 +50,7 @@ def visualize(image, labels, patches, flat_patches):
 
 
 def visualize_image(image):
+    image = image.permute(1, 2, 0) / 2 + 0.5
     plt.imshow(image, cmap="gray")
     plt.axis("off")
     plt.show()

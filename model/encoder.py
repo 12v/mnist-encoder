@@ -10,6 +10,7 @@ class EncoderLayer(nn.Module):
         self.self_attention = Attention(
             query_dim=d_model, key_value_dim=d_model, num_heads=num_heads
         )
+        self.norm1 = nn.LayerNorm(d_model)
         self.feed_forward = nn.Sequential(
             nn.Linear(d_model, d_model),
             nn.ReLU(),

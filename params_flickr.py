@@ -1,7 +1,7 @@
 patch_dim = 4
 
-d_model_encoder = 2048
-d_model_decoder = 1024
+d_model_encoder = 768
+d_model_decoder = 312
 
 decoder_length = 50
 
