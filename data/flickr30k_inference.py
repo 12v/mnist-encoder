@@ -3,7 +3,6 @@ import random
 
 import sentencepiece as spm
 import torch
-from datasets import load_dataset
 from torch.utils.data import IterableDataset
 from torchvision.transforms import ToTensor
 
@@ -16,14 +15,6 @@ from data.images import (
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-ds = load_dataset("nlphuji/flickr30k", split="test", trust_remote_code=True)
-
-length = len(ds)
-train_length = int(length * 0.8)
-test_length = length - train_length
-
-train_ds = ds.select(range(train_length))
-test_ds = ds.select(range(train_length, length))
 
 width = 500
 height = 500
@@ -36,7 +27,7 @@ vocab_size = 2000
 
 
 class Flickr30kTokenizer:
-    def __init__(self, ds):
+    def __init__(self, ds=None):
         corpus_path = os.path.join(script_dir, "corpus.txt")
         model_path = os.path.join(script_dir, "flickr30k.model")
 
@@ -89,7 +80,7 @@ class Flickr30kTokenizer:
         return self.sp.piece_to_id(token)
 
 
-tokenizer = Flickr30kTokenizer(ds)
+tokenizer = Flickr30kTokenizer()
 
 
 def image_and_caption_generator(ds):
@@ -188,11 +179,3 @@ class Flickr30kEncoderDataset(IterableDataset):
         generator = image_generator(dataset)
         for photo in generator:
             yield prep_image(photo, self.patch_dim)
-
-
-if __name__ == "__main__":
-    tensor, input_caption, output_caption = next(image_and_caption_generator(train_ds))
-    print("input_caption", input_caption)
-    print("input_caption_decoded", tokenizer.decode(input_caption))
-    print("output_caption", output_caption)
-    print("output_caption_decoded", tokenizer.decode(output_caption))

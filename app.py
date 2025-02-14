@@ -1,18 +1,21 @@
+import io
+
 import torch
 import torch.nn.functional as F
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse, StreamingResponse
+from PIL import Image
 
-from data.flickr30k import (
+from data.flickr30k_inference import (
     finish_token,
     height,
-    image_and_caption_generator,
+    process_image,
     start_token,
-    test_ds,
     tokenizer,
     vocab_size,
     width,
 )
 from data.images import create_patches, flatten_patches
-from data.visualization import visualize_attention
 from model.decoder import Decoder
 from model.utils import device
 from params_flickr import (
@@ -24,6 +27,8 @@ from params_flickr import (
     num_heads,
     patch_dim,
 )
+
+app = FastAPI()
 
 model = Decoder(
     # internal dimensions
@@ -46,27 +51,27 @@ total_params = sum(p.numel() for p in model.parameters())
 print(f"Total Parameters: {total_params}")
 
 model.to(device)
-
 model.eval()
-with torch.no_grad():
-    for image, caption in image_and_caption_generator(test_ds):
+
+
+async def processing_image(file: UploadFile):
+    with torch.no_grad():
+        image = process_image(file)
         patches = create_patches(image, patch_dim)
         patches = flatten_patches(patches, patch_dim)
 
         input_tokens = [tokenizer.get_id_for_token(start_token)]
         output_tokens = []
 
-        encoder_self_attention = None
-        decode_self_attention = None
-        decode_cross_attention = None
+        output_string = ""
 
         for i in range(decoder_length):
             tokens = torch.stack((torch.tensor(input_tokens),))
             (
                 output,
-                encoder_self_attention,
-                decode_self_attention,
-                decode_cross_attention,
+                _,
+                _,
+                _,
             ) = model(
                 patches.unsqueeze(0).to(device),
                 tokens.to(device),
@@ -80,22 +85,25 @@ with torch.no_grad():
             output_tokens.append(output_token)
 
             print(output_tokens, end="\r")
-            output_text = tokenizer.decode(output_tokens)
 
-            encoder_self_attention = encoder_self_attention
-            decode_self_attention = decode_self_attention
-            decode_cross_attention = decode_cross_attention
+            new_output_string = tokenizer.decode(output_tokens)
+
+            yield new_output_string[len(output_string) :]
+
+            output_string = new_output_string
 
             if output_token == tokenizer.get_id_for_token(finish_token):
                 break
 
-        print("\n")
-        print(output_text)
-        # visualize_image(image)
-        visualize_attention(
-            image,
-            encoder_self_attention,
-            decode_self_attention,
-            decode_cross_attention,
-            output_text,
-        )
+
+@app.post("/upload")
+async def upload_image(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    image = Image.open(io.BytesIO(image_bytes))
+    return StreamingResponse(processing_image(image), media_type="text/plain")
+
+
+@app.get("/")
+async def root():
+    # return the index.html file
+    return FileResponse("index.html")

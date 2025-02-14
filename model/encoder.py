@@ -16,7 +16,6 @@ class EncoderLayer(nn.Module):
             nn.ReLU(),
             nn.Linear(d_model, d_model),
         )
-        self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
 
     def forward(self, x):

@@ -1,3 +1,6 @@
+from PIL import Image
+
+
 def create_patches(image, patch_dim):
     num_dims = image.dim()
 
@@ -32,3 +35,20 @@ def normalize_and_standardize(data):
     data = data - data.mean() / data.std()
     data = 2 * (data - data.min()) / (data.max() - data.min()) - 1
     return data
+
+
+def pad_photo(photo, width, height):
+    if photo.size[0] == width and photo.size[1] == height:
+        return photo
+
+    else:
+        original_width, original_height = photo.size
+        new_image = Image.new("RGB", (width, height), (0, 0, 0))
+        new_image.paste(
+            photo,
+            (
+                (width - original_width) // 2,
+                (height - original_height) // 2,
+            ),
+        )
+        return new_image
